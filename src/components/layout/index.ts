@@ -1,1 +1,2 @@
-export {LayoutType, withLayout} from './withLayout'
+export { withLayout } from './hocs'
+export { LayoutVariant } from './const'

@@ -1,7 +1,7 @@
 import { HomePage } from './home-page'
-import { LayoutType, withLayout } from "@/components";
+import { withLayout } from "@/hocs";
+import { LayoutVariant } from "@/const";
 
-
-const HomePageWithLayout = withLayout(HomePage, LayoutType.HeaderAndFooter);
+const HomePageWithLayout = withLayout(HomePage, LayoutVariant.HeaderAndFooter);
 
 export { HomePageWithLayout as HomePage };

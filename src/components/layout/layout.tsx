@@ -1,17 +1,21 @@
 import { ReactNode } from "react";
+import { Inter } from 'next/font/google'
+
+const inter = Inter({ subsets: ['latin'] })
 
 interface LayoutProps {
     children: ReactNode;
-    hasHeader: boolean;
-    hasFooter: boolean;
+    hasHeader?: boolean;
+    hasFooter?: boolean;
 }
 
 const Layout = ({ children, hasFooter, hasHeader }: LayoutProps) => (
-    <div>
+    <div className={inter.className}>
         {hasHeader && <header>Header content</header>}
-        <main>{children}</main>
+        {children}
         {hasFooter && <footer>Footer content</footer>}
     </div>
 );
 
-export { Layout }
+export { Layout  }
+export type {LayoutProps}
