@@ -1,5 +1,4 @@
-import { withLayout } from './layout'
-import { LayoutVariant } from './layout';
+import { withLayout, LayoutVariant } from './layout'
 
 export const hoc = {
     withLayout,

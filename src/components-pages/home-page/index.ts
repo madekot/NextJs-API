@@ -1,7 +1,3 @@
-import { HomePage } from './home-page'
-import { withLayout } from "@/hocs";
-import { LayoutVariant } from "@/const";
+import HomePage from './home-page'
 
-const HomePageWithLayout = withLayout(HomePage, LayoutVariant.HeaderAndFooter);
-
-export { HomePageWithLayout as HomePage };
+export { HomePage };
