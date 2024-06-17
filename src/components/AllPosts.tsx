@@ -1,24 +1,31 @@
 import { useEffect, useState } from 'react';
-import { useQuery } from 'react-query';
+import { UseQueryOptions, UseQueryResult, useQuery } from 'react-query';
 import { Post } from '@prisma/client';
 
-const fetchPosts = async () => {
-    const res = await fetch('/api/posts');
-    if (!res.ok) {
-        throw new Error('Failed to fetch posts');
-    }
-    return res.json();
+type Status = 'idle' | 'loading' | 'success' | 'error';
+
+type FetchFunction<T> = () => Promise<T>;
+
+type PostWithAuthor = Post & { author: string };
+
+type PostsQueryResult<T> = {
+    data?: T;
+    status: Status;
+    restQueryResult: Omit<UseQueryResult<T, Error>, 'data' | 'isLoading'>;
 };
 
-type Status = 'idle' | 'loading' | 'success' | 'error'
+interface ExtendedQueryOptions<T, E> extends UseQueryOptions<T, E> {
+    isRefetchInterval?: boolean;
+}
 
-export default function AllUsersAllPosts() {
+function usePostsQuery<T>(queryKey: string, fetchFunction: FetchFunction<T>, options?: ExtendedQueryOptions<T, Error>): PostsQueryResult<T> {
     const [currentStatus, setCurrentStatus] = useState<Status>('idle');
 
-    const { data: posts, isLoading } = useQuery<(Post & { author: string })[]>('posts', fetchPosts, {
-        refetchInterval: 5000,
+    const { data, isLoading, ...restQueryResult } = useQuery<T, Error>(queryKey, fetchFunction, {
+        refetchInterval: options?.isRefetchInterval && 5000,
         onSuccess: () => setCurrentStatus('success'),
         onError: () => setCurrentStatus('error'),
+        ...options,
     });
 
     useEffect(() => {
@@ -26,6 +33,20 @@ export default function AllUsersAllPosts() {
             setCurrentStatus('loading');
         }
     }, [isLoading]);
+
+    return { data, status: currentStatus, restQueryResult };
+}
+
+const fetchPosts: FetchFunction<PostWithAuthor[]> = async () => {
+    const res = await fetch('/api/posts');
+    if (!res.ok) {
+        throw new Error('Failed to fetch posts');
+    }
+    return res.json();
+};
+
+export default function AllUsersAllPosts() {
+    const { data: posts, status } = usePostsQuery<PostWithAuthor[]>('posts', fetchPosts, { isRefetchInterval: true });
 
     return (
         <div>
@@ -45,7 +66,7 @@ export default function AllUsersAllPosts() {
                         ))}
                     </ul>
                 ),
-            }[currentStatus]}
+            }[status]}
         </div>
     );
 }
