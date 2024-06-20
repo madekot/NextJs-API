@@ -1,7 +1,8 @@
 import { LayoutVariant } from '@/const';
 import { withLayout } from '@/hocs';
 import { useEffect, useState } from 'react';
-import { Post } from '@prisma/client';
+import type { IPost } from '@/entities/post';
+import { Post } from '@/entities/post';
 
 const fetchProtectedData = async () => {
     const token = localStorage.getItem('token');
@@ -31,12 +32,11 @@ const fetchProtectedData = async () => {
     }
 };
 
-
 function Protected() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [message, setMessage] = useState('');
-    const [posts, setPosts] = useState<Post[]>([]);
+    const [posts, setPosts] = useState<IPost[]>([]);
 
     useEffect(() => {
         fetchProtectedData()
@@ -82,6 +82,35 @@ function Protected() {
         }
     };
 
+    const handleDeletePost = async (id: IPost['id']) => {
+        const token = localStorage.getItem('token');
+
+        if (token) {
+            const res = await fetch(`/api/post`, {
+                method: 'DELETE',
+                headers: {
+                    'Authorization': token,
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({ postId: id })
+            });
+
+
+            if (!res.ok) {
+                throw new Error('Failed to delete post');
+            }
+
+            setMessage('Post deleted');
+            const data = await fetchProtectedData();
+            setPosts(data);
+
+            return res.json();
+
+        } else {
+            setMessage('No token found');
+        }
+    }
+
     return (
         <div>
             <h1>Protected Page</h1>
@@ -104,8 +133,7 @@ function Protected() {
                 <ul>
                     {posts.length && posts.map((post) => (
                         <li key={post.id} style={{ margin: '15px 0' }}>
-                            <div>Title: {post.title}</div>
-                            <div>Content: {post.content}</div>
+                            <Post {...post} handleDeletePost={() => handleDeletePost(post.id)} />
                         </li>
                     ))}
                 </ul>

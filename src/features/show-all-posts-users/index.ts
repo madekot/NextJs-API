@@ -1,0 +1,1 @@
+export { ShowAllPostsUsers } from './ui'

@@ -1,5 +1,5 @@
 import { NextApiRequest, NextApiResponse } from 'next';
-import { prisma } from '../../../../lib/prisma';
+import { prisma } from '../../../src/shared/lib/prisma';
 import { Post } from '@prisma/client';
 
 export default async function handler(

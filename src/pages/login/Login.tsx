@@ -36,4 +36,4 @@ function Login() {
     );
 }
 
-export default withLayout(Login, LayoutVariant.WithHeader)
+export default withLayout(Login, LayoutVariant.WithHeaderAndFooter)

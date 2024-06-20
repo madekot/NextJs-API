@@ -1,5 +1,5 @@
 const jwt = require('jsonwebtoken');
-import { prisma } from '../../../lib/prisma';
+import { prisma } from '../../src/shared/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
 
 export default async function handler(
