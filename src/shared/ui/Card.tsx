@@ -1,19 +1,18 @@
-import Button from './Button';
-
 interface Props {
-    author: string;
+    author?: string;
     content: string;
     title: string;
-    handleButton?: () => void;
+    renderProp?: (props?: unknown) => React.ReactElement;
 }
 
-export function Card({ author, content, title, handleButton }: Props) {
+export function Card(props: Props) {
+    const { author, content, title, renderProp } = props
     return (
         <div>
-            <div>Author: {author}</div>
+            {author && <div>Author: {author}</div>}
             <div>Title: {title}</div>
             <div>Content: {content}</div>
-            {handleButton && <Button onClick={() => handleButton()}>click</Button>}
+            {renderProp && renderProp(props)}
         </div>
     );
 }

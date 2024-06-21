@@ -2,14 +2,14 @@ import { useCustomQuery } from '@/shared/lib';
 import type { Post } from '../types';
 
 interface Props {
-    PostSlot: React.FC<Post>;
+    renderProp: (props: Post) => React.ReactElement;
     fetchFunction: () => Promise<Post[]>;
     queryKey: string;
     titleText?: string;
 }
 
-export function PostsList({ PostSlot: Post, fetchFunction, queryKey, titleText }: Props) {
-    const { data: posts, status } = useCustomQuery<Post[]>(queryKey, fetchFunction, { isRefetchInterval: true });
+export function PostsList({ renderProp, fetchFunction, queryKey, titleText }: Props) {
+    const { data: posts, status } = useCustomQuery<Post[]>(queryKey, fetchFunction, { isRefetchInterval: false });
 
     return (
         <div>
@@ -22,7 +22,7 @@ export function PostsList({ PostSlot: Post, fetchFunction, queryKey, titleText }
                     <ul>
                         {posts?.length && posts.map((post) => (
                             <li key={post.id} style={{ margin: '15px 0' }}>
-                                <Post {...post} />
+                                {renderProp && renderProp(post)}
                             </li>
                         ))}
                     </ul>

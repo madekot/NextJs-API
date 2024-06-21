@@ -2,35 +2,8 @@ import { LayoutVariant } from '@/const';
 import { withLayout } from '@/hocs';
 import { useEffect, useState } from 'react';
 import type { IPost } from '@/entities/post';
-import { Post } from '@/entities/post';
-
-const fetchProtectedData = async () => {
-    const token = localStorage.getItem('token');
-
-    if (!token) {
-        console.error('No token found');
-        throw new Error('No token found');
-    }
-
-    try {
-        const response = await fetch('/api/protected', {
-            headers: {
-                'Authorization': token,
-                'Content-Type': 'application/json',
-            }
-        });
-
-        if (!response.ok) {
-            throw new Error('Failed to fetch protected data');
-        }
-
-        const data = await response.json();
-        return data.posts;
-    } catch (error) {
-        console.error('Error fetching protected data:', error);
-        throw error;
-    }
-};
+import { Post, createPost, deletePost, getAuthorizedUserPosts } from '@/entities/post';
+import Button from '@/shared/ui/Button';
 
 function Protected() {
     const [title, setTitle] = useState('');
@@ -39,7 +12,7 @@ function Protected() {
     const [posts, setPosts] = useState<IPost[]>([]);
 
     useEffect(() => {
-        fetchProtectedData()
+        getAuthorizedUserPosts()
             .then((posts) => {
                 setPosts(posts);
             })
@@ -49,65 +22,25 @@ function Protected() {
     }, [])
 
     const handleCreatePost = async () => {
-        const token = localStorage.getItem('token');
-
-        if (token) {
-            try {
-                const response = await fetch('/api/post', {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': token,
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({ title, content }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to create post');
-                }
-
-                const data = await response.json();
-                setMessage(`Post created: ${data.title}`);
-                setTitle('');
-                setContent('');
-                fetchProtectedData()
-                    .then((posts) => {
-                        setPosts(posts);
-                    })
-            } catch (error) {
-                setMessage('Failed to create post');
-            }
-        } else {
-            setMessage('No token found');
+        try {
+            await createPost(title, content);
+            setTitle('');
+            setContent('');
+            const posts = await getAuthorizedUserPosts();
+            setPosts(posts);
+        } catch {
+            setMessage('Failed to create post');
         }
     };
 
     const handleDeletePost = async (id: IPost['id']) => {
-        const token = localStorage.getItem('token');
-
-        if (token) {
-            const res = await fetch(`/api/post`, {
-                method: 'DELETE',
-                headers: {
-                    'Authorization': token,
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify({ postId: id })
-            });
-
-
-            if (!res.ok) {
-                throw new Error('Failed to delete post');
-            }
-
+        try {
+            await deletePost(id)
             setMessage('Post deleted');
-            const data = await fetchProtectedData();
+            const data = await getAuthorizedUserPosts();
             setPosts(data);
-
-            return res.json();
-
-        } else {
-            setMessage('No token found');
+        } catch {
+            setMessage('Failed to create post');
         }
     }
 
@@ -130,10 +63,14 @@ function Protected() {
 
             <div>
                 <h2>All Posts</h2>
+                {/* {posts && <PostsList fetchFunction={getAuthorizedUserPosts} queryKey={'post-user'} renderProp={(posts) => <Post {...posts} renderProp={(post) => {
+                    const { id } = post as IPost
+                    return <Button onClick={() => handleDeletePost(id)}>delete</Button>
+                }} />} />} */}
                 <ul>
-                    {posts.length && posts.map((post) => (
+                    {!!posts.length && posts.map((post) => (
                         <li key={post.id} style={{ margin: '15px 0' }}>
-                            <Post {...post} handleDeletePost={() => handleDeletePost(post.id)} />
+                            <Post {...post} renderProp={() => <Button onClick={() => handleDeletePost(post.id)}>delete</Button>} />
                         </li>
                     ))}
                 </ul>

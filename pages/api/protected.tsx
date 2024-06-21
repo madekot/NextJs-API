@@ -1,6 +1,7 @@
 const jwt = require('jsonwebtoken');
 import { prisma } from '../../src/shared/lib/prisma';
 import { NextApiRequest, NextApiResponse } from 'next';
+import { Post, User } from '@prisma/client'
 
 export default async function handler(
     req: NextApiRequest,
@@ -15,20 +16,17 @@ export default async function handler(
     const token = authorization;
 
     try {
-
         const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
+        const user: User = await prisma.user.findUnique({ where: { id: decoded.userId } });
 
-        const user = await prisma.user.findUnique({ where: { id: decoded.userId } });
-
-        const posts = await prisma.post.findMany({
-
+        const posts: Post[] = await prisma.post.findMany({
             where: {
                 userId: user.id,
             },
         });
 
-        res.status(200).json({ user, message: `Welcome to the protected route`, posts });
+        res.status(200).json({ posts });
     } catch (error) {
         res.status(401).json({ error: 'Invalid token' });
     }

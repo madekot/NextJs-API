@@ -1,11 +1,7 @@
 import { Card } from '@/shared/ui/Card';
-import type { Post } from '../types';
+import type { Post as IPost } from '../types';
 
-interface Props extends Post {
-    handleDeletePost?: () => void;
-}
-
-export function Post(props: Props) {
+export function Post(props: IPost) {
     return (
         <Card {...props} />
     );

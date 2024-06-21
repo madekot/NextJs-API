@@ -1,12 +1,13 @@
 
 import { LayoutVariant } from '@/const'
-import { UsersPosts } from '@/widgets/UsersPosts'
+import { ShowAllPostsUsers } from '@/features/show-all-posts-users'
 import { withLayout } from '@/hocs'
+
 
 const Home = () => {
     return (
         <main>
-            <UsersPosts />
+            <ShowAllPostsUsers />
         </main>
     )
 }
