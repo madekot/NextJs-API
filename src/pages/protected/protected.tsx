@@ -1,48 +1,50 @@
 import { LayoutVariant } from '@/const';
 import { withLayout } from '@/hocs';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import type { IPost } from '@/entities/post';
-import { Post, createPost, deletePost, getAuthorizedUserPosts } from '@/entities/post';
+import { Post, PostsList, createPost, deletePost, getAuthorizedUserPosts } from '@/entities/post';
 import Button from '@/shared/ui/Button';
+import { useMutation, useQueryClient } from 'react-query';
 
 function Protected() {
     const [title, setTitle] = useState('');
     const [content, setContent] = useState('');
     const [message, setMessage] = useState('');
-    const [posts, setPosts] = useState<IPost[]>([]);
 
-    useEffect(() => {
-        getAuthorizedUserPosts()
-            .then((posts) => {
-                setPosts(posts);
-            })
-            .catch(() => {
-                setMessage('Failed to create post');
-            })
-    }, [])
+    const queryClient = useQueryClient();
 
-    const handleCreatePost = async () => {
-        try {
-            await createPost(title, content);
-            setTitle('');
-            setContent('');
-            const posts = await getAuthorizedUserPosts();
-            setPosts(posts);
-        } catch {
-            setMessage('Failed to create post');
-        }
+    const mutationCreatePost = useMutation(createPost, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('post-user');
+        },
+    });
+
+    const handleCreatePost = ({ title, content }: { title: string, content: string }) => {
+        mutationCreatePost.mutate(
+            { title, content },
+            {
+                onSuccess: () => {
+                    setTitle('');
+                    setContent('');
+                    setMessage('Post create!');
+                },
+                onError: () => {
+                    setMessage('Failed to create post');
+                },
+            }
+        );
     };
 
-    const handleDeletePost = async (id: IPost['id']) => {
-        try {
-            await deletePost(id)
+    const mutationDeletePost = useMutation(deletePost, {
+        onSuccess: () => {
+            queryClient.invalidateQueries('post-user');
             setMessage('Post deleted');
-            const data = await getAuthorizedUserPosts();
-            setPosts(data);
-        } catch {
-            setMessage('Failed to create post');
-        }
-    }
+        },
+    });
+
+    const handleDeletePost = (id: number) => {
+        mutationDeletePost.mutate(id);
+    };
 
     return (
         <div>
@@ -58,22 +60,15 @@ function Protected() {
                 onChange={(e) => setContent(e.target.value)}
                 placeholder="Post Content"
             />
-            <button onClick={handleCreatePost}>Create Post</button>
+            <button onClick={() => handleCreatePost({ content, title })}>Create Post</button>
             <div>{message}</div>
 
             <div>
                 <h2>All Posts</h2>
-                {/* {posts && <PostsList fetchFunction={getAuthorizedUserPosts} queryKey={'post-user'} renderProp={(posts) => <Post {...posts} renderProp={(post) => {
+                <PostsList fetchFunction={getAuthorizedUserPosts} queryKey={'post-user'} renderProp={(posts) => <Post {...posts} renderProp={(post) => {
                     const { id } = post as IPost
                     return <Button onClick={() => handleDeletePost(id)}>delete</Button>
-                }} />} />} */}
-                <ul>
-                    {!!posts.length && posts.map((post) => (
-                        <li key={post.id} style={{ margin: '15px 0' }}>
-                            <Post {...post} renderProp={() => <Button onClick={() => handleDeletePost(post.id)}>delete</Button>} />
-                        </li>
-                    ))}
-                </ul>
+                }} />} />
             </div>
         </div>
     );

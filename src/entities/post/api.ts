@@ -45,7 +45,7 @@ export const getAuthorizedUserPosts = async (): Promise<Post[]> => {
     }
 };
 
-export const createPost = async (title: string, content: string): Promise<void> => {
+export const createPost = async ({ title, content }: { title: string, content: string }): Promise<void> => {
     const token = getAuthorizationToken();
 
     if (token) {

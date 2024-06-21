@@ -10,7 +10,7 @@ type PostsQueryResult<T> = {
     restQueryResult: Omit<UseQueryResult<T, Error>, 'data' | 'isLoading'>;
 };
 
-interface ExtendedQueryOptions<T, E> extends UseQueryOptions<T, E> {
+export interface ExtendedQueryOptions<T, E> extends UseQueryOptions<T, E> {
     isRefetchInterval?: boolean;
 }
 
