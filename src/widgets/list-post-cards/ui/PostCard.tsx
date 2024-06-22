@@ -1,7 +1,7 @@
+import { Post } from '@/entities/post';
 import { Card } from '@/shared/ui/Card';
-import type { Post as IPost } from '../types';
 
-export function Post(props: IPost) {
+export function PostCard(props: Post) {
     return (
         <Card {...props} />
     );

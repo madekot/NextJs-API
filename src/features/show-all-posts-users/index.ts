@@ -1,1 +1,0 @@
-export { ShowAllPostsUsers } from './ui'

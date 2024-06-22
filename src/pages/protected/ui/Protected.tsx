@@ -1,10 +1,9 @@
 import { LayoutVariant } from '@/const';
 import { withLayout } from '@/hocs';
 import { useState } from 'react';
-import type { IPost } from '@/entities/post';
-import { Post, PostsList, createPost, deletePost, getAuthorizedUserPosts } from '@/entities/post';
-import Button from '@/shared/ui/Button';
+import { createPost, } from '@/entities/post';
 import { useMutation, useQueryClient } from 'react-query';
+import { ListPostCards } from './ListPostCards';
 
 function Protected() {
     const [title, setTitle] = useState('');
@@ -35,17 +34,6 @@ function Protected() {
         );
     };
 
-    const mutationDeletePost = useMutation(deletePost, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('post-user');
-            setMessage('Post deleted');
-        },
-    });
-
-    const handleDeletePost = (id: number) => {
-        mutationDeletePost.mutate(id);
-    };
-
     return (
         <div>
             <h1>Protected Page</h1>
@@ -62,14 +50,7 @@ function Protected() {
             />
             <button onClick={() => handleCreatePost({ content, title })}>Create Post</button>
             <div>{message}</div>
-
-            <div>
-                <h2>All Posts</h2>
-                <PostsList fetchFunction={getAuthorizedUserPosts} queryKey={'post-user'} renderProp={(posts) => <Post {...posts} renderProp={(post) => {
-                    const { id } = post as IPost
-                    return <Button onClick={() => handleDeletePost(id)}>delete</Button>
-                }} />} />
-            </div>
+            <ListPostCards getStatusDelete={(message) => setMessage(message)} />
         </div>
     );
 }

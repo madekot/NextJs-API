@@ -1,6 +1,7 @@
-import { useCustomQuery } from '@/shared/lib';
-import type { Post } from '../types';
-import type { ExtendedQueryOptions } from '@/shared/lib/useCustomQuery';
+import { useCustomQuery } from "@/shared/lib";
+import { Post } from '@/entities/post';
+import { ExtendedQueryOptions } from '@/shared/lib/useCustomQuery';
+
 
 interface Props {
     renderProp: (props: Post) => React.ReactElement;
@@ -10,7 +11,7 @@ interface Props {
     queryOptions?: ExtendedQueryOptions<Post[], Error>;
 }
 
-export function PostsList({ renderProp, fetchFunction, queryKey, titleText, queryOptions }: Props) {
+export function ListPostCards({ renderProp, fetchFunction, queryKey, titleText, queryOptions }: Props) {
     const { data: posts, status } = useCustomQuery<Post[]>(queryKey, fetchFunction, { isRefetchInterval: true, ...queryOptions });
 
     return (

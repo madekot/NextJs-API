@@ -1,2 +1,2 @@
-import Protected from './protected';
+import Protected from './ui/Protected';
 export { Protected };
