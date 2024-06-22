@@ -21,8 +21,7 @@ export const getAuthorizedUserPosts = async (): Promise<Post[]> => {
     const token = getAuthorizationToken();
 
     if (!token) {
-        console.error('No token found');
-        throw new Error('No token found');
+        throw new Error('No token found, please relogin');
     }
 
     try {

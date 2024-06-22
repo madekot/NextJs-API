@@ -1,35 +1,37 @@
-import { Post, deletePost, getAuthorizedUserPosts } from '@/entities/post';
+import { Post, getAuthorizedUserPosts } from '@/entities/post';
 import { ListPostCards as BaseListPostCards, PostCard } from '@/widgets/list-post-cards';
-import Button from '@/shared/ui/Button';
-import { useMutation, useQueryClient } from 'react-query';
+import { DeleteButtonPost } from './DeleteButtonPost';
+import { useCustomQuery } from '@/shared/lib';
+import { useEffect } from 'react';
+import { useRouter } from 'next/router';
 
+export function ListPostCards() {
+    const { data: posts, status, error } = useCustomQuery<Post[]>('post-user', getAuthorizedUserPosts, { isRefetchInterval: true });
+    const router = useRouter();
+    console.log(error)
 
-export function ListPostCards({ getStatusDelete }: { getStatusDelete?: (message: string) => void }) {
-    const queryClient = useQueryClient();
+    useEffect(() => {
+        if (!error) {
+            return;
+        }
 
-    const mutationDeletePost = useMutation(deletePost, {
-        onSuccess: () => {
-            queryClient.invalidateQueries('post-user');
-            getStatusDelete?.('post DELETED')
-        },
-    });
-
-    const handleDeletePost = (id: number) => {
-        mutationDeletePost.mutate(id);
-    };
+        const timeStamp = setTimeout(() => router.push('./login'), 2000);
+        return () => clearTimeout(timeStamp);
+    }, [error, router]);
 
     return (
         <BaseListPostCards
             titleText='You posts'
-            fetchFunction={getAuthorizedUserPosts}
-            queryKey={'post-user'}
+            posts={posts}
+            errorMessage={error?.message}
+            status={status}
             renderProp={
                 (posts) =>
                     <PostCard
                         {...posts}
                         renderProp={(post) => {
                             const { id } = post as Post
-                            return <Button onClick={() => handleDeletePost(id)}>delete</Button>
+                            return <DeleteButtonPost id={id} />
                         }}
                     />
             }

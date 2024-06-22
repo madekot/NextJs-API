@@ -1,5 +1,5 @@
 export function getAuthorizationToken() {
-    return localStorage.getItem('token');
+    return localStorage.getItem('token') || '';
 }
 
 export function setAuthorizationToken(token: string) {

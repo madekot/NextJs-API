@@ -1,35 +1,31 @@
-import { useCustomQuery } from "@/shared/lib";
 import { Post } from '@/entities/post';
-import { ExtendedQueryOptions } from '@/shared/lib/useCustomQuery';
-
 
 interface Props {
     renderProp: (props: Post) => React.ReactElement;
-    fetchFunction: () => Promise<Post[]>;
-    queryKey: string;
     titleText?: string;
-    queryOptions?: ExtendedQueryOptions<Post[], Error>;
+    errorMessage?: string;
+    posts?: Post[];
+    status: string;
 }
 
-export function ListPostCards({ renderProp, fetchFunction, queryKey, titleText, queryOptions }: Props) {
-    const { data: posts, status } = useCustomQuery<Post[]>(queryKey, fetchFunction, { isRefetchInterval: true, ...queryOptions });
-
+export function ListPostCards({ renderProp, titleText, posts, errorMessage, status }: Props) {
     return (
         <div>
             {titleText && <h2>{titleText}</h2>}
             {{
                 idle: <p>idle...</p>,
                 loading: <p>Loading...</p>,
-                error: <p>error: Failed to fetch posts</p>,
-                success: (
-                    <ul>
-                        {!!posts?.length && posts.map((post) => (
-                            <li key={post.id} style={{ margin: '15px 0' }}>
-                                {renderProp && renderProp(post)}
-                            </li>
-                        ))}
-                    </ul>
-                ),
+                error: <p>ERROR: {errorMessage}</p>,
+                success:
+                    posts?.length ?
+                        <ul>
+                            {posts?.map((post) => (
+                                <li key={post.id} style={{ margin: '15px 0' }}>
+                                    {renderProp && renderProp(post)}
+                                </li>
+                            ))}
+                        </ul> :
+                        <h3> There are no posts, write them!</h3>,
             }[status]}
         </div>
     );
