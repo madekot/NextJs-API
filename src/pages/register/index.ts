@@ -1,2 +1,2 @@
-import Register from './register';
+import Register from './ui/register';
 export { Register };

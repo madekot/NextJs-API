@@ -4,11 +4,18 @@ import { LayoutVariant } from '@/const';
 import { withLayout } from '@/hocs';
 
 function Login() {
+
+
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const router = useRouter();
 
     const handleLogin = async () => {
+
+        // TODO: 
+        // - перенести в api запрос fetch
+        // - создать сующность Юзер
+
         const res = await fetch('/api/login', {
             method: 'POST',
             headers: {
@@ -25,6 +32,8 @@ function Login() {
     };
 
     return (
+        // TODO:
+        // - перенести в компонент создания проферки аутификации пользователя => обработать состояния запроса fetch
         <div>
             <h1>Login</h1>
             <input placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} />
