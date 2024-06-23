@@ -33,14 +33,14 @@ export const getAuthorizedUserPosts = async (): Promise<Post[]> => {
         });
 
         if (!response.ok) {
-            throw new Error('Failed to fetch protected data');
+            throw new Error('Failed to fetch posts user');
         }
 
         const data = await response.json();
+
         return data.posts;
     } catch (error) {
-        console.error('Error fetching protected data:', error);
-        return [];
+        throw new Error((error as Error).message)
     }
 };
 

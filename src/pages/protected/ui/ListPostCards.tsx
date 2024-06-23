@@ -8,7 +8,6 @@ import { useRouter } from 'next/router';
 export function ListPostCards() {
     const { data: posts, status, error } = useCustomQuery<Post[]>('post-user', getAuthorizedUserPosts, { isRefetchInterval: true });
     const router = useRouter();
-    console.log(error)
 
     useEffect(() => {
         if (!error) {

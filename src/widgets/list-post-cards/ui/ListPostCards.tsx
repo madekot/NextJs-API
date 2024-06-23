@@ -17,15 +17,15 @@ export function ListPostCards({ renderProp, titleText, posts, errorMessage, stat
                 loading: <p>Loading...</p>,
                 error: <p>ERROR: {errorMessage}</p>,
                 success:
-                    posts?.length ?
-                        <ul>
+                    posts?.length
+                        ? <ul>
                             {posts?.map((post) => (
                                 <li key={post.id} style={{ margin: '15px 0' }}>
                                     {renderProp && renderProp(post)}
                                 </li>
                             ))}
-                        </ul> :
-                        <h3> There are no posts, write them!</h3>,
+                        </ul>
+                        : <h3> There are no posts, write them!</h3>,
             }[status]}
         </div>
     );
