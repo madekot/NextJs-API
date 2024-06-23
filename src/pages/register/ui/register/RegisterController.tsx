@@ -2,27 +2,28 @@ import { CreateNewUserForm } from './CreateNewUserForm';
 import { useRouter } from 'next/router';
 import { createUser } from '@/entities/user';
 import { useFormState } from './useFormState';
-import { useAutoClearMessage } from './useAutoClearMessage';
 import { useMessageState } from './useMessageState';
+import { useAutoClearMessage } from './useAutoClearMessage';
 
 export function RegisterController() {
     const { name, setName, email, setEmail, password, setPassword, resetForm } = useFormState();
     const { error, setError, message, setMessage } = useMessageState();
     const router = useRouter();
 
-    useAutoClearMessage(setMessage, setError, 2000);
+    useAutoClearMessage(message, setMessage, 1000);
+    useAutoClearMessage(error, setError, 1000);
 
     const handleRegister = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        createUser({ email, name, password })
-            .then(() => {
-                setMessage('The user has been successfully created!');
-                setTimeout(() => {
-                    router.push('./login');
-                }, 2000);
-            })
-            .catch((error) => setError(error.message));
-
+        try {
+            await createUser({ email, name, password })
+            setMessage('The user has been successfully created!');
+            setTimeout(() => {
+                router.push('./login');
+            }, 3000);
+        } catch (error) {
+            setError((error as Error).message)
+        }
         resetForm();
     };
 

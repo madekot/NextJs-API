@@ -1,8 +1,17 @@
-import { useState } from 'react';
+import { useCallback, useState } from 'react';
 
 export const useMessageState = () => {
-    const [error, setError] = useState('');
-    const [message, setMessage] = useState('');
+    const [error, setErrorState] = useState('');
+    const [message, setMessageState] = useState('');
+
+    const setError = useCallback((error: string) => {
+        setErrorState(error);
+    }, []);
+
+    const setMessage = useCallback((message: string) => {
+        setMessageState(message);
+    }, []);
+
 
     return {
         error,
