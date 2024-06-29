@@ -15,3 +15,16 @@ export const createUser = async ({ name, email, password }: Pick<User, 'name' | 
         throw new Error(data?.error)
     }
 };
+
+export const deleteAllUsersAndPosts = async () => {
+    const res = await fetch('/api/users', {
+        method: 'DELETE',
+    });
+
+    if (!res.ok) {
+        throw new Error('Failed to delete users and posts');
+    }
+
+    const data = await res.json();
+    return data;
+};
