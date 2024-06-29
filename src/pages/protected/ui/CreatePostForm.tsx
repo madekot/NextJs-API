@@ -1,6 +1,7 @@
 import { createPost } from '@/entities/post';
 import { useMutationWithCacheInvalidation } from '@/shared/lib/useMutationWithCacheInvalidation';
 import { useTimeout } from '@/shared/lib/useTimeout';
+import { Message } from '@/shared/ui/Message';
 import { useState } from 'react';
 
 export function CreatePostForm() {
@@ -42,7 +43,7 @@ export function CreatePostForm() {
                 />
                 <button disabled={mutationCreatePost.isLoading} onClick={() => handleCreatePost({ content, title })}>Create Post</button>
             </form>
-            <div>{message}</div>
+            <Message successMessage={message} />
         </div>
     );
 }

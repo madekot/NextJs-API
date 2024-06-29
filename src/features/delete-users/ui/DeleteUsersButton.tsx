@@ -1,11 +1,15 @@
 import { deleteAllUsersAndPosts } from '@/entities/user';
 import Button from '@/shared/ui/Button';
+import { Message } from '@/shared/ui/Message';
+import { useAutoClearMessage, useMessageState } from '@/widgets/message';
 import { useState } from 'react';
 
 export function DeleteUsersButton() {
     const [loading, setLoading] = useState(false);
-    const [errorMessage, setErrorMessage] = useState('');
-    const [successMessage, setSuccessMessage] = useState('');
+    const { error, message, setError: setErrorMessage, setMessage: setSuccessMessage } = useMessageState()
+
+    useAutoClearMessage(message, setSuccessMessage, 1000)
+    useAutoClearMessage(error, setErrorMessage, 1000)
 
     const handleDeleteUsers = async () => {
         setLoading(true);
@@ -27,8 +31,7 @@ export function DeleteUsersButton() {
             <Button onClick={handleDeleteUsers} disabled={loading}>
                 {loading ? 'Deleting...' : 'Delete All Users and Posts'}
             </Button>
-            {errorMessage && <p style={{ color: 'red' }}>{errorMessage}</p>}
-            {successMessage && <p style={{ color: 'green' }}>{successMessage}</p>}
+            <Message errorMessage={error} successMessage={message} />
         </div>
     );
 }

@@ -2,8 +2,8 @@ import { CreateNewUserForm } from './CreateNewUserForm';
 import { useRouter } from 'next/router';
 import { createUser } from '@/entities/user';
 import { useFormState } from './useFormState';
-import { useMessageState } from './useMessageState';
-import { useAutoClearMessage } from './useAutoClearMessage';
+import { Message } from '@/shared/ui/Message';
+import { useAutoClearMessage, useMessageState } from '@/widgets/message';
 
 export function RegisterController() {
     const { name, setName, email, setEmail, password, setPassword, resetForm } = useFormState();
@@ -38,8 +38,7 @@ export function RegisterController() {
                 handleChangePassword={(e) => setPassword(e.target.value)}
                 handleSubmit={(e) => handleRegister(e)}
             />
-            {error && <p style={{ color: 'red' }}>{error}</p>}
-            {message && <p style={{ color: 'green' }}>{message}</p>}
+            <Message errorMessage={error} successMessage={message} />
         </div>
     );
 }
